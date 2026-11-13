@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>演示站合集</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F6FEB'/%3E%3Ctext x='16' y='22' font-size='17' font-weight='700' fill='%23fff' text-anchor='middle' font-family='sans-serif'%3ED%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+  <!-- ===== 顶部导航 ===== -->
+  <header class="topnav">
+    <div class="nav-inner">
+      <a class="brand" href="#/"><span class="brand-mark" id="brandMark">D</span><span id="brandName">演示站合集</span></a>
+      <nav class="nav-links" id="navArticles"></nav>
+      <div class="nav-right">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="text" id="searchInput" placeholder="搜索站点名称、简介…" autocomplete="off">
+        </div>
+        <div class="cat-dropdown">
+          <button class="cat-btn" id="catBtn" type="button">
+            <span id="catBtnText">全部分类</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="cat-menu" id="catMenu"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 主体 ===== -->
+  <main class="container">
+    <section class="toolbar">
+      <span class="stat">收录站点 <b id="statCount">0</b> 个</span>
+      <span class="stat">总浏览量 <b id="statViews">0</b></span>
+      <span class="spacer"></span>
+      <label class="per-page">每页
+        <select id="perPageSelect">
+          <option value="12">12</option>
+          <option value="24" selected>24</option>
+          <option value="36">36</option>
+          <option value="48">48</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="grid" id="cardGrid"></section>
+    <nav class="pager" id="pager"></nav>
+  </main>
+
+  <!-- ===== 右侧轨道：回顶部 / 回底部 ===== -->
+  <aside class="side-rail" aria-label="页面快捷操作">
+    <button type="button" id="toTop" title="回到顶部">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
+    <button type="button" id="toBottom" title="回到底部">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+  </aside>
+
+  <!-- 右下角悬浮按钮 -->
+  <button class="fab" id="fab" type="button" title="回到顶部">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+  </button>
+
+  <!-- ===== 页脚 ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="javascript:void(0)" data-page="privacy">隐私政策</a>
+        <a href="javascript:void(0)" data-page="disclaimer">免责声明</a>
+        <a href="javascript:void(0)" data-page="sitemap">站点地图</a>
+        <a href="admin.html">后台管理</a>
+      </div>
+      <div class="footer-copy" id="footerCopyright">© 2026 演示站合集 DemoHub</div>
+      <div class="footer-disclaimer">本站所有演示站点仅用于技术演示，相关账号、数据与内容均归原作者所有，本站不承担任何使用分享及由此产生的责任。</div>
+    </div>
+  </footer>
+
+  <!-- ===== 站点详情弹窗 ===== -->
+  <div class="modal-mask" id="siteModal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" type="button" data-close="siteModal" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-body" id="siteModalBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== 文章弹窗 ===== -->
+  <div class="modal-mask" id="articleModal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" type="button" data-close="articleModal" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-body">
+        <h2 class="detail-title" id="articleTitle"></h2>
+        <div class="article-content" id="articleContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 静态页面弹窗（隐私 / 免责 / 地图） ===== -->
+  <div class="modal-mask" id="pageModal">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" type="button" data-close="pageModal" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-body">
+        <h2 class="detail-title" id="pageTitle"></h2>
+        <div class="article-content" id="pageContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+  <script src="assets/public.js"></script>
+</body>
+</html>
