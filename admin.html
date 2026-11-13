@@ -1,217 +1,232 @@
+<!-- admin.html 后台管理页 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>后台管理 · 演示站合集</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231F6FEB'/%3E%3Ctext x='16' y='22' font-size='17' font-weight='700' fill='%23fff' text-anchor='middle' font-family='sans-serif'%3EA%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="assets/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>演示站合集 · 后台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{padding:20px;background:#f4f6f8}
+.tab{display:flex;gap:6px;margin-bottom:16px}
+.tab button{padding:8px 14px;border:none;background:#e5e7eb;border-radius:6px;cursor:pointer}
+.tab button.active{background:#2563eb;color:#fff}
+.panel{display:none;background:#fff;padding:18px;border-radius:10px;margin-bottom:16px}
+.panel.active{display:block}
+.form-item{margin:10px 0}
+label{display:block;margin-bottom:4px;font-weight:500}
+input,textarea,select{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px}
+textarea{min-height:90px}
+.btn{padding:8px 14px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;margin:4px}
+.btn-danger{background:#dc2626}
+table{width:100%;border-collapse:collapse;margin:12px 0}
+th,td{border:1px solid #ddd;padding:8px;text-align:left}
+</style>
 </head>
 <body>
-
-  <!-- ===== 登录 ===== -->
-  <div class="login-box" id="loginView">
-    <h1>后台管理登录</h1>
-    <div class="field" style="margin-bottom:16px;">
-      <label for="loginPwd">管理员密码</label>
-      <input type="password" id="loginPwd" placeholder="请输入密码">
-    </div>
-    <button class="btn btn-primary" id="loginBtn" type="button" style="width:100%;justify-content:center;">登 录</button>
-    <p style="font-size:12px;color:var(--muted);margin:14px 0 0;">初始密码 admin123，登录后可在「站点设置」中修改。静态站点后台仅为轻量校验，请勿存放敏感信息。</p>
-  </div>
-
-  <!-- ===== 后台主体 ===== -->
-  <div class="admin-wrap" id="adminView" style="display:none;">
-    <div class="admin-head">
-      <h1>演示站合集 · 后台管理</h1>
-      <span class="spacer"></span>
-      <a class="btn btn-ghost" href="index.html">查看前台</a>
-      <button class="btn btn-ghost" id="logoutBtn" type="button">退出登录</button>
-    </div>
-
-    <div class="admin-tabs" id="adminTabs">
-      <button type="button" data-tab="sites" class="active">站点管理</button>
-      <button type="button" data-tab="articles">文章管理</button>
-      <button type="button" data-tab="settings">站点设置</button>
-      <button type="button" data-tab="data">数据管理</button>
-      <button type="button" data-tab="github">GitHub 同步</button>
-    </div>
-
-    <!-- 站点管理 -->
-    <section class="panel" id="panel-sites">
-      <div class="tool-row">
-        <button class="btn btn-primary" id="addSiteBtn" type="button">添加站点</button>
-        <button class="btn btn-ghost" id="checkAllBtn" type="button">检测全部链接</button>
-        <span style="font-size:13px;color:var(--muted);" id="checkTip">浏览器跨域限制下，检测结果仅供参考，可手动修正状态。</span>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="admin-table">
-          <colgroup>
-            <col style="width:22%"><col style="width:14%"><col style="width:10%"><col style="width:24%"><col style="width:10%"><col style="width:20%">
-          </colgroup>
-          <thead>
-            <tr><th>系统名称</th><th>分类</th><th>状态</th><th>演示地址</th><th>浏览量</th><th>操作</th></tr>
-          </thead>
-          <tbody id="siteTbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 文章管理 -->
-    <section class="panel" id="panel-articles" style="display:none;">
-      <div class="tool-row">
-        <button class="btn btn-primary" id="addArticleBtn" type="button">添加文章</button>
-        <span style="font-size:13px;color:var(--muted);">文章标题会显示在前台置顶导航栏。</span>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="admin-table">
-          <colgroup><col style="width:25%"><col style="width:55%"><col style="width:20%"></colgroup>
-          <thead><tr><th>标题</th><th>内容摘要</th><th>操作</th></tr></thead>
-          <tbody id="articleTbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 站点设置 -->
-    <section class="panel" id="panel-settings" style="display:none;">
-      <h2>基础设置</h2>
-      <div class="form-grid two">
-        <div class="field">
-          <label for="setSiteName">站点名称</label>
-          <input type="text" id="setSiteName">
-        </div>
-        <div class="field">
-          <label for="setPerPage">默认每页条数</label>
-          <select id="setPerPage">
-            <option value="12">12</option>
-            <option value="24">24</option>
-            <option value="36">36</option>
-            <option value="48">48</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="setFooter">页脚版权信息</label>
-          <input type="text" id="setFooter">
-        </div>
-        <div class="field">
-          <label for="setPassword">修改管理员密码（留空则不修改）</label>
-          <input type="password" id="setPassword" placeholder="新密码">
-        </div>
-        <div class="field" style="grid-column:1 / -1;">
-          <label for="setBgUrl">背景图地址（URL）</label>
-          <input type="text" id="setBgUrl" placeholder="https://… 或留空使用纯色背景">
-        </div>
-        <div class="field" style="grid-column:1 / -1;">
-          <label>上传背景图（自动转成图片地址填入上方）</label>
-          <input type="file" id="setBgFile" accept="image/*">
-        </div>
-      </div>
-      <div class="tool-row" style="margin-top:18px;">
-        <button class="btn btn-primary" id="saveSettingsBtn" type="button">保存设置</button>
-      </div>
-    </section>
-
-    <!-- 数据管理 -->
-    <section class="panel" id="panel-data" style="display:none;">
-      <h2>导入 / 导出 / 上传数据</h2>
-      <div class="tool-row">
-        <button class="btn btn-primary" id="exportBtn" type="button">导出数据 JSON</button>
-        <button class="btn btn-ghost" id="importBtn" type="button">导入 / 上传数据 JSON</button>
-        <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
-        <button class="btn btn-ghost" id="resetViewsBtn" type="button">清空全部浏览量</button>
-        <button class="btn btn-ghost" id="clearLocalBtn" type="button">清除本地快照</button>
-      </div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.8;">
-        导出会把当前站点、文章、设置与浏览量打包为 JSON 文件备份；导入/上传会用 JSON 内容覆盖当前数据。
-        未配置 GitHub 时，数据仅保存在当前浏览器本地，清除浏览器缓存后会恢复为站点内置数据。
-      </p>
-    </section>
-
-    <!-- GitHub 同步 -->
-    <section class="panel" id="panel-github" style="display:none;">
-      <h2>GitHub 仓库配置（Cloudflare Pages 可直接连接本仓库发布）</h2>
-      <div class="form-grid two">
-        <div class="field"><label for="ghOwner">仓库所有者 owner</label><input type="text" id="ghOwner" placeholder="例如：yourname"></div>
-        <div class="field"><label for="ghRepo">仓库名 repo</label><input type="text" id="ghRepo" placeholder="例如：demo-hub"></div>
-        <div class="field"><label for="ghBranch">分支 branch</label><input type="text" id="ghBranch" placeholder="main"></div>
-        <div class="field"><label for="ghPath">数据文件路径 path</label><input type="text" id="ghPath" placeholder="data/sites.json"></div>
-        <div class="field" style="grid-column:1 / -1;">
-          <label for="ghToken">Personal Access Token（仅当前浏览器保存，需有仓库 contents 读写权限）</label>
-          <input type="password" id="ghToken" placeholder="ghp_xxxxxxxx">
-        </div>
-      </div>
-      <div class="tool-row" style="margin-top:18px;">
-        <button class="btn btn-primary" id="ghSaveBtn" type="button">保存配置</button>
-        <button class="btn btn-ghost" id="ghPushBtn" type="button">立即推送数据到仓库</button>
-        <button class="btn btn-ghost" id="ghPullBtn" type="button">从仓库拉取数据</button>
-      </div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.8;">
-        填写保存后，前台会优先读取仓库中的 JSON；后台增改站点、文章与设置时会自动提交一次更新。
-        Token 只存在本机浏览器，不会上传到第三方。
-      </p>
-    </section>
-  </div>
-
-  <!-- ===== 站点编辑弹窗 ===== -->
-  <div class="modal-mask" id="siteFormModal">
-    <div class="modal" role="dialog" aria-modal="true">
-      <button class="modal-close" type="button" data-close="siteFormModal" aria-label="关闭">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-      <div class="modal-body">
-        <h2 class="detail-title" id="formTitle">添加站点</h2>
-        <div class="form-grid two">
-          <div class="field"><label>系统名称 *</label><input type="text" id="fName"></div>
-          <div class="field"><label>分类</label><input type="text" id="fCategory" list="catList" placeholder="选择或输入新分类"></div>
-          <datalist id="catList"></datalist>
-          <div class="field"><label>演示地址 URL</label><input type="text" id="fUrl" placeholder="https://…"></div>
-          <div class="field"><label>源码地址 URL</label><input type="text" id="fSource" placeholder="https://github.com/…"></div>
-          <div class="field">
-            <label>状态</label>
-            <select id="fStatus">
-              <option value="normal">正常</option>
-              <option value="offline">失效</option>
-              <option value="unknown">未知</option>
-            </select>
-          </div>
-          <div class="field"><label>最近检测时间</label><input type="text" id="fCheckedAt" placeholder="YYYY-MM-DD HH:mm"></div>
-          <div class="field" style="grid-column:1 / -1;"><label>简介</label><textarea id="fIntro"></textarea></div>
-          <div class="field" style="grid-column:1 / -1;"><label>功能（每行一条）</label><textarea id="fFeatures" placeholder="可视化排版&#10;权限管理"></textarea></div>
-          <div class="field"><label>演示账号</label><input type="text" id="fAccount"></div>
-          <div class="field"><label>演示密码</label><input type="text" id="fPassword"></div>
-          <div class="field" style="grid-column:1 / -1;"><label>封面图 URL（留空则用名称首字占位）</label><input type="text" id="fImage"></div>
-        </div>
-        <div class="detail-actions">
-          <button class="btn btn-primary" id="formSaveBtn" type="button">保存站点</button>
-          <button class="btn btn-ghost" data-close="siteFormModal" type="button">取消</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== 文章编辑弹窗 ===== -->
-  <div class="modal-mask" id="articleFormModal">
-    <div class="modal" role="dialog" aria-modal="true">
-      <button class="modal-close" type="button" data-close="articleFormModal" aria-label="关闭">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-      <div class="modal-body">
-        <h2 class="detail-title" id="articleFormTitle">编辑文章</h2>
-        <div class="form-grid">
-          <div class="field"><label>标题 *</label><input type="text" id="aTitle"></div>
-          <div class="field"><label>正文</label><textarea id="aContent" style="min-height:160px;"></textarea></div>
-        </div>
-        <div class="detail-actions">
-          <button class="btn btn-primary" id="articleSaveBtn" type="button">保存文章</button>
-          <button class="btn btn-ghost" data-close="articleFormModal" type="button">取消</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script src="assets/app.js"></script>
-  <script src="assets/admin.js"></script>
+<div class="tab">
+  <button data-tab="site" class="active">站点管理</button>
+  <button data-tab="article">文章管理</button>
+  <button data-tab="setting">站点设置</button>
+  <button data-tab="data">数据管理</button>
+</div>
+<!-- 站点管理 -->
+<div class="panel active" id="p-site">
+  <h3>添加/编辑站点</h3>
+  <div class="form-item"><label>名称</label><input id="s-name"></div>
+  <div class="form-item"><label>分类</label><input id="s-cat"></div>
+  <div class="form-item"><label>缩略图地址</label><input id="s-thumb"></div>
+  <div class="form-item"><label>是否正常</label><select id="s-status"><option value="1">正常</option><option value="0">异常</option></select></div>
+  <div class="form-item"><label>简介</label><textarea id="s-desc"></textarea></div>
+  <div class="form-item"><label>功能</label><textarea id="s-feat"></textarea></div>
+  <div class="form-item"><label>演示账号</label><input id="s-acc"></div>
+  <div class="form-item"><label>演示密码</label><input id="s-pwd"></div>
+  <div class="form-item"><label>演示站地址</label><input id="s-demo"></div>
+  <div class="form-item"><label>源码地址</label><input id="s-source"></div>
+  <input type="hidden" id="s-id">
+  <button class="btn" onclick="saveSite()">保存站点</button>
+  <h4 style="margin-top:20px">站点列表</h4>
+  <div id="siteList"></div>
+</div>
+<!-- 文章管理 -->
+<div class="panel" id="p-article">
+  <h3>添加文章（标题展示在置顶导航）</h3>
+  <div class="form-item"><label>标题</label><input id="a-title"></div>
+  <div class="form-item"><label>内容</label><textarea id="a-content"></textarea></div>
+  <input type="hidden" id="a-id">
+  <button class="btn" onclick="saveArticle()">保存文章</button>
+  <div id="artList"></div>
+</div>
+<!-- 设置 -->
+<div class="panel" id="p-setting">
+  <div class="form-item"><label>背景图URL</label><input id="bg-input"></div>
+  <button class="btn" onclick="saveSetting()">保存设置</button>
+</div>
+<!-- 数据导入导出 -->
+<div class="panel" id="p-data">
+  <button class="btn" onclick="exportJson()">导出JSON</button>
+  <button class="btn" onclick="document.getElementById('importFile').click()">导入JSON</button>
+  <input type="file" id="importFile" accept=".json" hidden onchange="importJson(event)">
+  <div style="margin-top:12px">说明：导出的json上传到仓库data/sites.json，触发pages部署更新</div>
+</div>
+<script>
+const STORAGE_KEY = "demoHubData";
+let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {sites:[],articles:[],setting:{bg:""}};
+// 切换标签
+document.querySelectorAll(".tab button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tab button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  document.getElementById("p-"+b.dataset.tab).classList.add("active");
+})
+function saveData(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+  // 触发前台storage事件，前台立刻刷新
+  window.dispatchEvent(new StorageEvent("storage",{key:STORAGE_KEY,newValue:JSON.stringify(data)}));
+  alert("保存成功！前台即时生效");
+  renderSiteList();renderArtList();
+}
+// 站点
+function saveSite(){
+  const id = document.getElementById("s-id").value || Date.now().toString();
+  const site = {
+    id,
+    name:document.getElementById("s-name").value.trim(),
+    category:document.getElementById("s-cat").value.trim(),
+    thumb:document.getElementById("s-thumb").value.trim(),
+    status:Number(document.getElementById("s-status").value),
+    desc:document.getElementById("s-desc").value.trim(),
+    features:document.getElementById("s-feat").value.trim(),
+    account:document.getElementById("s-acc").value.trim(),
+    pwd:document.getElementById("s-pwd").value.trim(),
+    demoUrl:document.getElementById("s-demo").value.trim(),
+    sourceUrl:document.getElementById("s-source").value.trim(),
+    checkTime:new Date().toLocaleString()
+  }
+  if(!site.name) return alert("站点名称不能为空");
+  const idx = data.sites.findIndex(x=>x.id===id);
+  if(idx>-1) data.sites[idx]=site;
+  else data.sites.push(site);
+  saveData();
+  clearSiteForm();
+}
+function clearSiteForm(){
+  document.getElementById("s-id").value="";
+  document.getElementById("s-name").value="";
+  document.getElementById("s-cat").value="";
+  document.getElementById("s-thumb").value="";
+  document.getElementById("s-status").value="1";
+  document.getElementById("s-desc").value="";
+  document.getElementById("s-feat").value="";
+  document.getElementById("s-acc").value="";
+  document.getElementById("s-pwd").value="";
+  document.getElementById("s-demo").value="";
+  document.getElementById("s-source").value="";
+}
+function renderSiteList(){
+  const wrap = document.getElementById("siteList");
+  wrap.innerHTML = `<table><tr><th>名称</th><th>分类</th><th>状态</th><th>操作</th></tr>`
+  data.sites.forEach(s=>{
+    wrap.innerHTML += `<tr>
+      <td>${s.name}</td>
+      <td>${s.category}</td>
+      <td>${s.status?"正常":"异常"}</td>
+      <td>
+        <button class="btn" onclick="editSite('${s.id}')">编辑</button>
+        <button class="btn btn-danger" onclick="delSite('${s.id}')">删除</button>
+      </td>
+    </tr>`
+  })
+  wrap.innerHTML += "</table>"
+}
+function editSite(id){
+  const s = data.sites.find(x=>x.id===id);
+  if(!s) return;
+  document.getElementById("s-id").value = s.id;
+  document.getElementById("s-name").value = s.name;
+  document.getElementById("s-cat").value = s.category;
+  document.getElementById("s-thumb").value = s.thumb;
+  document.getElementById("s-status").value = s.status;
+  document.getElementById("s-desc").value = s.desc;
+  document.getElementById("s-feat").value = s.features;
+  document.getElementById("s-acc").value = s.account;
+  document.getElementById("s-pwd").value = s.pwd;
+  document.getElementById("s-demo").value = s.demoUrl;
+  document.getElementById("s-source").value = s.sourceUrl;
+}
+function delSite(id){
+  if(!confirm("确认删除？")) return;
+  data.sites = data.sites.filter(x=>x.id!==id);
+  saveData();
+}
+// 文章
+function saveArticle(){
+  const id = document.getElementById("a-id").value || Date.now().toString();
+  const art = {id,title:document.getElementById("a-title").value.trim(),content:document.getElementById("a-content").value.trim()};
+  if(!art.title) return alert("标题不能为空");
+  const idx = data.articles.findIndex(x=>x.id===id);
+  if(idx>-1) data.articles[idx]=art;
+  else data.articles.push(art);
+  saveData();
+  clearArtForm();
+}
+function clearArtForm(){
+  document.getElementById("a-id").value="";
+  document.getElementById("a-title").value="";
+  document.getElementById("a-content").value="";
+}
+function renderArtList(){
+  const wrap = document.getElementById("artList");
+  wrap.innerHTML = `<table><tr><th>标题</th><th>操作</th></tr>`
+  data.articles.forEach(a=>{
+    wrap.innerHTML += `<tr><td>${a.title}</td><td>
+      <button class="btn" onclick="editArt('${a.id}')">编辑</button>
+      <button class="btn btn-danger" onclick="delArt('${a.id}')">删除</button>
+    </td></tr>`
+  })
+  wrap.innerHTML += "</table>"
+}
+function editArt(id){
+  const a = data.articles.find(x=>x.id===id);
+  if(!a) return;
+  document.getElementById("a-id").value=a.id;
+  document.getElementById("a-title").value=a.title;
+  document.getElementById("a-content").value=a.content;
+}
+function delArt(id){
+  if(!confirm("确认删除？")) return;
+  data.articles = data.articles.filter(x=>x.id!==id);
+  saveData();
+}
+// 设置
+function saveSetting(){
+  data.setting.bg = document.getElementById("bg-input").value.trim();
+  saveData();
+}
+// 导入导出
+function exportJson(){
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="sites.json";
+  a.click();
+}
+function importJson(e){
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ev=>{
+    try{
+      data = JSON.parse(ev.target.result);
+      saveData();
+      alert("导入成功");
+    }catch(err){alert("JSON格式错误")}
+  }
+  r.readAsText(f);
+}
+// 初始化
+renderSiteList();renderArtList();
+document.getElementById("bg-input").value = data.setting.bg||"";
+</script>
 </body>
 </html>
